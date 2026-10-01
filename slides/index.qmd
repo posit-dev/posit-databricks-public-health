@@ -36,7 +36,7 @@ format:
 
 <h1 class="display">Secure, governed analytics from Workbench to Connect</h1>
 
-[Connecting R and Python to Databricks, the right way]{.sub style="margin-top: 40px; display: block;"}
+[Best practices for connecting R and Python to Databricks]{.sub style="margin-top: 40px; display: block;"}
 
 [James Blair, Posit · California Department of Public Health webinar]{style="font-size: 28px; color: #D0DBE5;"}
 :::
@@ -52,7 +52,6 @@ Welcome. Today is demo-first: one realistic workflow, start to finish, using pub
 
 <h2>What we will cover</h2>
 
-[About 45 minutes, mostly live]{.sub}
 
 :::: {.grid .g4}
 ::: card
@@ -102,7 +101,7 @@ This mirrors the agenda on your invite. Sections 1 and 2 are a few slides each; 
 
 <h2>Everything today works in RStudio</h2>
 
-[The code is the story. The IDE is just where it runs.]{.sub}
+[We'll primarily work in Positron, but everything shown will work the same in RStudio]{.sub}
 
 :::: {.grid .g3}
 ::: {.card .white}
@@ -124,7 +123,6 @@ For Python-first teams. The ibis script runs cell by cell in either.
 :::
 ::::
 
-[We'll call out anything IDE-specific. Short version: **nothing in the workflow depends on the IDE.**]{.takeaway}
 
 ![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
 :::
@@ -166,7 +164,7 @@ I'll drive from Positron today because it shows R and Python side by side. If yo
 ```
 
 ::: idp
-One identity across all three: your organization's sign-in (for example, Microsoft Entra ID). Posit products exchange it for **short-lived Databricks OAuth tokens**. Nobody copies a token.
+One identity across all three: your organization's sign-in (for example, Microsoft Entra ID). Posit products exchange it for **short-lived Databricks OAuth tokens**. Nobody manages or copies long-lived PATs.
 :::
 
 ![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
@@ -205,7 +203,7 @@ Recommend SQL warehouses as the default for analysts. Spark is for when you genu
 
 <h2>Best practice 1: no credentials in code</h2>
 
-[One line of code. It authenticates correctly everywhere.]{.sub}
+[Proper authentication, everywhere.]{.sub}
 
 :::: {.grid .g-code}
 ::: {}
@@ -276,7 +274,7 @@ cases |>
 :::
 ::::
 
-[In today's demo the table has **199,125 rows**. The dashboard never brings back more than about 60 at a time.]{.takeaway}
+[In today's demo the table has **~200k rows**. The dashboard never brings back more than about 60 at a time.]{.takeaway}
 
 ![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
 :::
@@ -481,42 +479,6 @@ Scope them to the report's audience.
 
 ::: notes
 Pause here before Q&A.
-:::
-
-## {}
-
-::: frame
-[Get started]{.eyebrow}
-
-<h2>Everything from today is yours</h2>
-
-:::: {.grid .g2 style="margin-top: 20px;"}
-::: clean
-[In the repo]{.sub style="display: block; margin-bottom: 20px;"}
-
-- Setup SQL and loader for the demo data
-- R walkthrough with dbplyr
-- Python walkthrough with ibis
-- Shiny dashboard and scheduled Quarto report
-- Commons AI agent with trusted measures
-- These slides, built with Quarto
-:::
-
-::: clean
-[Documentation]{.sub style="display: block; margin-bottom: 20px;"}
-
-- docs.posit.co/data-sources: Databricks patterns for Workbench and Connect
-- Workbench managed Databricks credentials
-- Connect OAuth integrations
-- dbplyr.tidyverse.org, ibis-project.org, and posit-dev.github.io/commons
-:::
-::::
-
-![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
-:::
-
-::: notes
-Your Posit team will share the repo after the session. Mention your account team as the contact for follow-up.
 :::
 
 ## {.dark background-color="#111C26"}

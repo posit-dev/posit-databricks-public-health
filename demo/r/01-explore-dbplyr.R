@@ -35,14 +35,13 @@ dbGetQuery(con, "SELECT current_user() AS me")
 # catalogs, schemas, tables, and columns from here.
 
 # 2. A lazy table --------------------------------------------------------------
-# I() passes the three-part Unity Catalog name (catalog.schema.table) as-is.
-cases <- tbl(con, I("public_health_demo.surveillance.infectious_disease_cases"))
+cases <- tbl(con, in_catalog("public_health_demo", "surveillance", "infectious_disease_cases"))
 
 # Printing shows a preview. R hasn't downloaded the table.
 cases
 
 # How many rows are we NOT pulling into R?
-cases |> count()
+cases |> count() |> show_query()
 
 # 3. Ask a question with dplyr -------------------------------------------------
 # Coccidioidomycosis (Valley Fever): statewide incidence by year.
