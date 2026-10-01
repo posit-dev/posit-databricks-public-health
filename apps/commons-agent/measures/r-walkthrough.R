@@ -13,7 +13,7 @@
 #' @return One row per county: county, cases, person_years, rate_per_100k.
 #'   Suppressed counts are excluded from the sums, so counties with suppressed
 #'   years have rates that are lower bounds.
-#' @provenance demo/r/01-explore-dbplyr.R#L76-L89 (retrieved 2026-10-01)
+#' @provenance demo/r/01-explore-dbplyr.R#L77-L90 (retrieved 2026-10-01)
 #' @measure
 county_pooled_rates <- function(disease, start_year, end_year, surveillance) {
   dplyr::tbl(

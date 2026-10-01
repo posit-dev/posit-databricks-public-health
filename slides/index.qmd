@@ -16,6 +16,7 @@ format:
     hash: true
     transition: none
     embed-resources: true
+    html-math-method: plain
     highlight-style: github-dark
     code-copy: false
     code-line-numbers: false
@@ -42,7 +43,7 @@ format:
 :::
 
 ::: notes
-Welcome. Today is demo-first: one realistic workflow, start to finish, using public CDPH communicable disease data in Databricks. Everything you see is in a repo you'll receive afterward. Housekeeping: drop questions in the Q&A as we go; we'll keep about 10 minutes at the end.
+The session is demo-first: one realistic workflow, start to finish, with public CDPH communicable disease data in Databricks. All of the code is in the accompanying repository.
 :::
 
 ## {}
@@ -90,9 +91,6 @@ Your questions, plus how to get started with the code from today.
 ![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
 :::
 
-::: notes
-This mirrors the agenda on your invite. Sections 1 and 2 are a few slides each; the rest is live.
-:::
 
 ## {.subtle background-color="#F3F6F8"}
 
@@ -128,7 +126,7 @@ For Python-first teams. The ibis script runs cell by cell in either.
 :::
 
 ::: notes
-I'll drive from Positron today because it shows R and Python side by side. If you're in RStudio, you can follow along line for line. The Connections pane, plots, and Publish button all exist in RStudio too.
+The demo uses Positron because it shows R and Python side by side. All of the R code works the same in RStudio, including the Connections pane, plots, and the Publish button.
 :::
 
 ## {}
@@ -348,9 +346,6 @@ Our demo data is already public, but we've simulated the kind of de-identificati
 ```
 :::
 
-::: notes
-Switch to Workbench. Have the warehouse warmed up before the call. Data: CDPH's public "Infectious Diseases by Disease, County, Year, and Sex" dataset, loaded into Unity Catalog.
-:::
 
 ## {}
 
@@ -477,9 +472,6 @@ Scope them to the report's audience.
 ![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
 :::
 
-::: notes
-Pause here before Q&A.
-:::
 
 ## {.dark background-color="#111C26"}
 
@@ -498,6 +490,3 @@ Pause here before Q&A.
 [Thank you for joining]{.sub style="margin-top: 40px; display: block;"}
 :::
 
-::: notes
-Thank attendees. The repo, slides, and documentation links will be shared after the session.
-:::
