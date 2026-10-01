@@ -1,6 +1,6 @@
 # Posit + Databricks for public health
 
-This repository has the materials from a Posit webinar for the California Department of Public Health. It shows good practices for R and Python work with Databricks in Posit Workbench and Posit Connect.
+This repository has the materials from a Posit webinar about public health analytics. It shows good practices for R and Python work with Databricks in Posit Workbench and Posit Connect.
 
 All R code works the same in RStudio and in Positron.
 

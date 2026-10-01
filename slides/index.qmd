@@ -39,7 +39,7 @@ format:
 
 [Best practices for connecting R and Python to Databricks]{.sub style="margin-top: 40px; display: block;"}
 
-[James Blair, Posit · California Department of Public Health webinar]{style="font-size: 28px; color: #D0DBE5;"}
+[James Blair, Posit]{style="font-size: 28px; color: #D0DBE5;"}
 :::
 
 ::: notes

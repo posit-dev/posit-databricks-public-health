@@ -26,33 +26,6 @@ wheels = [
 ]
 
 [[package]]
-name = "cdph-databricks-demo"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "databricks-sdk" },
-    { name = "ibis-framework", extra = ["databricks"] },
-    { name = "pandas" },
-    { name = "posit-sdk" },
-    { name = "pyarrow" },
-    { name = "python-dotenv" },
-    { name = "rsconnect-python" },
-    { name = "sqlglot" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "databricks-sdk", specifier = ">=0.145.0" },
-    { name = "ibis-framework", extras = ["databricks"], specifier = ">=12.0.0" },
-    { name = "pandas", specifier = ">=3.0.6" },
-    { name = "posit-sdk", specifier = ">=0.17.0" },
-    { name = "pyarrow", specifier = ">=25.0.1" },
-    { name = "python-dotenv", specifier = ">=1.2.4" },
-    { name = "rsconnect-python", specifier = ">=1.31.1" },
-    { name = "sqlglot", specifier = ">=30.10,<30.18" },
-]
-
-[[package]]
 name = "certifi"
 version = "2026.7.22"
 source = { registry = "https://pypi.org/simple" }
@@ -834,6 +807,33 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ae/15/4500e320e6b101ec3b719ae85b697d9940b6cda672bc555bd6016fc60c6f/pip-26.2.1.tar.gz", hash = "sha256:f6ad667e89a1fe78046c8f13232b247200f5258d7828f3f7883d660878e0813f", size = 1848877 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f3/6e/1736e5b4ae2b778ef2f81c47d797de9f891d4d8acb047a24ca37a60294dd/pip-26.2.1-py3-none-any.whl", hash = "sha256:71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e", size = 1816632 },
+]
+
+[[package]]
+name = "posit-databricks-public-health"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "databricks-sdk" },
+    { name = "ibis-framework", extra = ["databricks"] },
+    { name = "pandas" },
+    { name = "posit-sdk" },
+    { name = "pyarrow" },
+    { name = "python-dotenv" },
+    { name = "rsconnect-python" },
+    { name = "sqlglot" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "databricks-sdk", specifier = ">=0.145.0" },
+    { name = "ibis-framework", extras = ["databricks"], specifier = ">=12.0.0" },
+    { name = "pandas", specifier = ">=3.0.6" },
+    { name = "posit-sdk", specifier = ">=0.17.0" },
+    { name = "pyarrow", specifier = ">=25.0.1" },
+    { name = "python-dotenv", specifier = ">=1.2.4" },
+    { name = "rsconnect-python", specifier = ">=1.31.1" },
+    { name = "sqlglot", specifier = ">=30.10,<30.18" },
 ]
 
 [[package]]
