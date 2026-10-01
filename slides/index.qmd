@@ -1,0 +1,541 @@
+---
+pagetitle: "Posit and Databricks: secure, governed analytics for public health"
+format:
+  revealjs:
+    theme: [default, posit.scss]
+    css: fonts.css
+    width: 1920
+    height: 1080
+    margin: 0
+    center: false
+    slide-number: c/t
+    show-slide-number: all
+    controls: false
+    menu: false
+    progress: true
+    hash: true
+    transition: none
+    embed-resources: true
+    highlight-style: github-dark
+    code-copy: false
+    code-line-numbers: false
+    link-external-newwindow: true
+---
+
+## {.dark background-color="#111C26"}
+
+::: frame
+![](assets/logos/posit-horiz-white.png){.logo-dark fig-alt="Posit"}
+
+<div style="margin-top: 230px;"></div>
+
+[Posit + Databricks for public health]{.eyebrow}
+
+::: bar
+:::
+
+<h1 class="display">Secure, governed analytics from Workbench to Connect</h1>
+
+[Connecting R and Python to Databricks, the right way]{.sub style="margin-top: 40px; display: block;"}
+
+[James Blair, Posit · California Department of Public Health webinar]{style="font-size: 28px; color: #D0DBE5;"}
+:::
+
+::: notes
+Welcome. Today is demo-first: one realistic workflow, start to finish, using public CDPH communicable disease data in Databricks. Everything you see is in a repo you'll receive afterward. Housekeeping: drop questions in the Q&A as we go; we'll keep about 10 minutes at the end.
+:::
+
+## {}
+
+::: frame
+[Today]{.eyebrow}
+
+<h2>What we will cover</h2>
+
+[About 45 minutes, mostly live]{.sub}
+
+:::: {.grid .g4}
+::: card
+[01]{.num}
+
+<h3>How Posit connects to Databricks</h3>
+
+Workbench and Connect integrations, and the packages that matter for R and Python.
+:::
+
+::: card
+[02]{.num}
+
+<h3>Credentials and access</h3>
+
+No secrets in code. How data permissions carry through to published apps.
+:::
+
+::: card
+[03]{.num}
+
+<h3>Demo</h3>
+
+Explore in Workbench, publish a Shiny app and an AI agent to Connect, change permissions live.
+:::
+
+::: card
+[04]{.num}
+
+<h3>Q&A</h3>
+
+Your questions, plus how to get started with the code from today.
+:::
+::::
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+This mirrors the agenda on your invite. Sections 1 and 2 are a few slides each; the rest is live.
+:::
+
+## {.subtle background-color="#F3F6F8"}
+
+::: frame
+[Before we start]{.eyebrow}
+
+<h2>Everything today works in RStudio</h2>
+
+[The code is the story. The IDE is just where it runs.]{.sub}
+
+:::: {.grid .g3}
+::: {.card .white}
+<h3>RStudio on Workbench</h3>
+
+Where most of your R work happens today. Every R script, the Shiny app, and the report run unchanged.
+:::
+
+::: {.card .white}
+<h3>Positron on Workbench</h3>
+
+What you'll see on screen today. Same R code, plus Python in the same session.
+:::
+
+::: {.card .white}
+<h3>Jupyter and VS Code</h3>
+
+For Python-first teams. The ibis script runs cell by cell in either.
+:::
+::::
+
+[We'll call out anything IDE-specific. Short version: **nothing in the workflow depends on the IDE.**]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+I'll drive from Positron today because it shows R and Python side by side. If you're in RStudio, you can follow along line for line. The Connections pane, plots, and Publish button all exist in RStudio too.
+:::
+
+## {}
+
+::: frame
+[01 · How it fits together]{.eyebrow}
+
+<h2>Databricks holds the data. Posit is where you use it.</h2>
+
+```{=html}
+<div class="arch-wrap">
+  <div class="node posit">
+    <img src="assets/logos/workbench-fullcolor.png" alt="Posit Workbench">
+    <div class="item">RStudio, Positron, Jupyter, VS Code</div>
+    <div class="item">Explore, model, build apps and reports</div>
+    <div class="item">Managed Databricks credentials</div>
+  </div>
+  <div class="arrow"><div class="line"></div><span>SQL as you</span></div>
+  <div class="node dbx">
+    <h3>Databricks</h3>
+    <div class="item">SQL warehouses run the queries</div>
+    <div class="item">Unity Catalog: tables, grants, masks, lineage</div>
+    <div class="item">Clusters for Spark workloads</div>
+  </div>
+  <div class="arrow"><div class="line left"></div><span>SQL as each viewer</span></div>
+  <div class="node posit">
+    <img src="assets/logos/connect-fullcolor.png" alt="Posit Connect">
+    <div class="item">Shiny apps, Quarto and R Markdown reports, APIs</div>
+    <div class="item">Scheduling and email</div>
+    <div class="item">OAuth integrations for Databricks</div>
+  </div>
+</div>
+```
+
+::: idp
+One identity across all three: your organization's sign-in (for example, Microsoft Entra ID). Posit products exchange it for **short-lived Databricks OAuth tokens**. Nobody copies a token.
+:::
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Key idea: compute and governance live in Databricks. Posit is the workbench and the publishing layer. The arrows are SQL going to a warehouse, and the identity on that SQL is always a real person (or an explicit service account for scheduled jobs).
+:::
+
+## {}
+
+::: frame
+[01 · Packages]{.eyebrow}
+
+<h2>Pick the tool for the job</h2>
+
+|  | R | Python | Use it for |
+|---|---|---|---|
+| SQL warehouse | `DBI` + `odbc::databricks()` + `dbplyr` | `ibis`, `databricks-sql-connector` | **Most analysis, dashboards, and reports.** Fast startup, scales to zero, governed by Unity Catalog. |
+| Spark cluster | `sparklyr` + `pysparklyr` | Databricks Connect (PySpark) | Large-scale data engineering and distributed ML |
+| Platform APIs | `brickster` | `databricks-sdk` | Jobs, files, volumes, workspace automation |
+
+[Today: **dbplyr** for R and **ibis** for Python. Same idea in both: write dataframe code, the warehouse runs it. The same packages and Posit integrations work with other cloud platforms such as Snowflake.]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Recommend SQL warehouses as the default for analysts. Spark is for when you genuinely need distributed compute. dbplyr and ibis both translate dataframe code to SQL, so analysts don't have to switch languages to use the warehouse.
+:::
+
+## {}
+
+::: frame
+[02 · Credentials]{.eyebrow}
+
+<h2>Best practice 1: no credentials in code</h2>
+
+[One line of code. It authenticates correctly everywhere.]{.sub}
+
+:::: {.grid .g-code}
+::: {}
+```r
+# R
+con <- dbConnect(
+  odbc::databricks(),
+  httpPath = Sys.getenv("DATABRICKS_HTTP_PATH")
+)
+```
+
+<div style="height: 20px;"></div>
+
+```python
+# Python (ibis)
+cfg = databricks_config(
+  posit_workbench_strategy=WorkbenchStrategy(),
+  posit_connect_strategy=ConnectStrategy(),
+  posit_default_strategy=databricks_cli,
+)
+```
+:::
+
+::: {}
+| Where it runs | Who Databricks sees |
+|---|---|
+| Workbench | You, via managed credentials from your sign-in |
+| Connect: app | Each viewer, via an OAuth integration |
+| Connect: schedule | A named service account |
+| Laptop | You, via `databricks auth login` |
+:::
+::::
+
+[Avoid: personal access tokens in scripts or `.Renviron`, and one shared login behind every app.]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+This is the single most important slide for a regulated environment. Tokens are short-lived and minted from SSO, so there's nothing to leak, rotate, or revoke when someone leaves. Audit logs in Databricks show the real person.
+:::
+
+## {}
+
+::: frame
+[02 · Performance]{.eyebrow}
+
+<h2>Best practice 2: let the warehouse do the work</h2>
+
+:::: {.grid .g-code style="grid-template-columns: 1.2fr 1fr; margin-top: 20px;"}
+::: {}
+```r
+cases <- tbl(con, I("catalog.schema.table"))
+
+cases |>
+  filter(disease == "Coccidioidomycosis") |>
+  summarise(cases = sum(cases), .by = county) |>
+  show_query()   # see the SQL
+  # collect()    # bring back ~58 rows
+```
+:::
+
+::: clean
+- **Tables stay lazy** until you call `collect()` (R) or `to_pandas()` (Python)
+- **Filter and aggregate first**, then collect the small result
+- **Check the SQL** with `show_query()` or `ibis.to_sql()`
+- **Use Databricks SQL functions** directly when you need them
+:::
+::::
+
+[In today's demo the table has **199,125 rows**. The dashboard never brings back more than about 60 at a time.]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+200k rows in our demo table; the app never pulls more than about 60. This is what keeps Shiny apps responsive and keeps sensitive line-level data out of R sessions.
+:::
+
+## {}
+
+::: frame
+[02 · Access]{.eyebrow}
+
+<h2>Best practice 3: govern the data, not every app</h2>
+
+[Unity Catalog rules apply to whoever runs the query, in any tool]{.sub}
+
+:::: {.grid .g-code}
+::: {}
+```sql
+-- Small-cell suppression as a column mask
+CREATE FUNCTION mask_small_cells(cases INT)
+RETURN CASE
+  WHEN is_member('phi_unmasked') THEN cases
+  WHEN cases BETWEEN 1 AND 10 THEN NULL
+  ELSE cases
+END;
+
+ALTER TABLE infectious_disease_cases
+  ALTER COLUMN cases SET MASK mask_small_cells;
+```
+:::
+
+::: clean
+- **Grants** on catalogs, schemas, and tables
+- **Row filters** such as county or program assignment
+- **Column masks** for suppression and PII
+- **Lineage and audit** for every query, from every tool
+:::
+::::
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Our demo data is already public, but we've simulated the kind of de-identification rule you'd apply to sensitive data. Rates are masked too: a rate times the population gives you the count back. The point: write the rule once in the platform, and every Shiny app, report, notebook, and SQL query respects it automatically.
+:::
+
+## {.dark background-color="#111C26"}
+
+::: frame
+![](assets/logos/posit-horiz-white.png){.logo-dark fig-alt="Posit"}
+
+<div style="margin-top: 130px;"></div>
+
+[03 · Demo]{.eyebrow}
+
+::: bar
+:::
+
+<h2>From question to published app</h2>
+
+```{=html}
+<ol class="steps">
+  <li>Connect and explore in R with dbplyr<span>Valley Fever in California, 2001 to 2023</span></li>
+  <li>The same question in Python with ibis<span>Validate the data and publish a derived table</span></li>
+  <li>A Shiny dashboard that queries as the viewer<span>Publish to Posit Connect with an OAuth integration</span></li>
+  <li>Ask questions with a trustworthy AI agent<span>Commons answers from your trusted code, with a model served by Databricks</span></li>
+  <li>Change a permission in Databricks<span>Watch both published apps respond, with no redeploy</span></li>
+</ol>
+```
+:::
+
+::: notes
+Switch to Workbench. Have the warehouse warmed up before the call. Data: CDPH's public "Infectious Diseases by Disease, County, Year, and Sex" dataset, loaded into Unity Catalog.
+:::
+
+## {}
+
+::: frame
+[03 · Trustworthy AI]{.eyebrow}
+
+<h2>An AI agent you can check</h2>
+
+[Commons, from Posit, puts your trusted code at the center]{.sub}
+
+:::: {.grid .g3}
+::: card
+[Verified]{.num}
+
+<h3>Trusted calculation</h3>
+
+The agent runs a measure taken from code you already trust, such as this dashboard and report.
+:::
+
+::: card
+[Cited]{.num}
+
+<h3>New code with sources</h3>
+
+The agent writes new SQL and cites the documentation that supports it.
+:::
+
+::: card
+[Untrusted]{.num}
+
+<h3>Flagged for review</h3>
+
+No trusted code or supporting documentation. The answer says so.
+:::
+::::
+
+[Labels come from the path the agent takes, not from the model. The model is **Claude, served by Databricks**, and every query runs as the viewer.]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Commons is open source (R, and Python in beta). The agent's measures come from the dashboard, the report, and the R walkthrough; its dictionary and context come from CDPH's own published data dictionary. Because it uses the same per-session Databricks connection, the small-cell masks apply to the agent too. It mentions suppressed counties in its answers. No external API key: the LLM is a Databricks serving endpoint, authorized with the same viewer token.
+:::
+
+## {}
+
+::: frame
+[Publishing to Connect]{.eyebrow}
+
+<h2>Viewer or service account?</h2>
+
+| Integration | Databricks sees | Best for | Watch for |
+|---|---|---|---|
+| Viewer OAuth | Each person viewing the content | Interactive Shiny and dashboards where access differs by person | Connect inside `server()`, one connection per session |
+| Service account | A named service principal | Scheduled Quarto and R Markdown reports, pipelines, emailed outputs | Grant it only what the audience is allowed to see |
+
+[Both are set up once by an administrator, then attached to content under **Access › Integrations**. The code doesn't change.]{.takeaway}
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+The scheduled report in the repo (reports/disease-snapshot.qmd) uses the service account pattern. The service account's permissions define what every recipient can see, so scope it to the audience.
+:::
+
+## {.subtle background-color="#F3F6F8"}
+
+::: frame
+[Recap]{.eyebrow}
+
+<h2>Best practices to take with you</h2>
+
+:::: {.grid .g3 style="margin-top: 20px;"}
+::: {.card .white}
+[01]{.num}
+
+<h3>No secrets in code</h3>
+
+Workbench managed credentials and Connect OAuth integrations. No personal access tokens.
+:::
+
+::: {.card .white}
+[02]{.num}
+
+<h3>Compute in the warehouse</h3>
+
+Lazy tables with dbplyr or ibis. Collect small results, late.
+:::
+
+::: {.card .white}
+[03]{.num}
+
+<h3>Govern once, in the platform</h3>
+
+Unity Catalog grants, row filters, and masks apply in every tool.
+:::
+
+::: {.card .white}
+[04]{.num}
+
+<h3>Viewer identity for apps</h3>
+
+Connect per session in `server()`, so each viewer sees what they're allowed to see.
+:::
+
+::: {.card .white}
+[05]{.num}
+
+<h3>Service accounts for schedules</h3>
+
+Scope them to the report's audience.
+:::
+
+::: {.card .white}
+[06]{.num}
+
+<h3>Configuration in variables</h3>
+
+`DATABRICKS_HTTP_PATH` in environment variables, not hard-coded.
+:::
+::::
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Pause here before Q&A.
+:::
+
+## {}
+
+::: frame
+[Get started]{.eyebrow}
+
+<h2>Everything from today is yours</h2>
+
+:::: {.grid .g2 style="margin-top: 20px;"}
+::: clean
+[In the repo]{.sub style="display: block; margin-bottom: 20px;"}
+
+- Setup SQL and loader for the demo data
+- R walkthrough with dbplyr
+- Python walkthrough with ibis
+- Shiny dashboard and scheduled Quarto report
+- Commons AI agent with trusted measures
+- These slides, built with Quarto
+:::
+
+::: clean
+[Documentation]{.sub style="display: block; margin-bottom: 20px;"}
+
+- docs.posit.co/data-sources: Databricks patterns for Workbench and Connect
+- Workbench managed Databricks credentials
+- Connect OAuth integrations
+- dbplyr.tidyverse.org, ibis-project.org, and posit-dev.github.io/commons
+:::
+::::
+
+![](assets/logos/posit-horiz-full-color.png){.logo-tab fig-alt="Posit"}
+:::
+
+::: notes
+Your Posit team will share the repo after the session. Mention your account team as the contact for follow-up.
+:::
+
+## {.dark background-color="#111C26"}
+
+::: frame
+![](assets/logos/posit-horiz-white.png){.logo-dark fig-alt="Posit"}
+
+<div style="margin-top: 300px;"></div>
+
+[04 · Q&A]{.eyebrow}
+
+::: bar
+:::
+
+<h1 class="display">Questions</h1>
+
+[Thank you for joining]{.sub style="margin-top: 40px; display: block;"}
+:::
+
+::: notes
+Thank attendees. The repo, slides, and documentation links will be shared after the session.
+:::

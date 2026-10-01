@@ -15,7 +15,7 @@ The demo data is CDPH's public [Infectious Diseases by Disease, County, Year, an
 
 | Path | What it is |
 |---|---|
-| `slides/index.html` | Webinar slides. Open in a browser. Use the arrow keys to move between slides, `F` for full screen, and `N` for speaker notes. |
+| `slides/` | Webinar slides, built with [Quarto](https://quarto.org) (Reveal.js). `index.html` is a self-contained file: open it in a browser, use the arrow keys, `F` for full screen, and `S` for speaker view. To edit, change `index.qmd` (and the `posit.scss` theme), then run `quarto render slides/index.qmd`. |
 | `setup/load_data.py` | Loads the demo data into Unity Catalog and runs the SQL in `setup/sql/` |
 | `setup/sql/` | Schema, curated table with column comments and tags, small-cell suppression masks, and grants |
 | `demo/r/01-explore-dbplyr.R` | R walkthrough: connect, explore lazily, `show_query()`, collect small results, governance |

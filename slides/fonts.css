@@ -1,0 +1,15 @@
+/* Posit brand fonts (Latin subsets) */
+@font-face {
+  font-family: "Open Sans";
+  src: url("assets/fonts/OpenSans.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Source Code Pro";
+  src: url("assets/fonts/SourceCodePro.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
