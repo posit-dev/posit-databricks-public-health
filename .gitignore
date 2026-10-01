@@ -26,3 +26,6 @@ __pycache__/
 
 # OS
 .DS_Store
+
+# shinychat: locally saved conversations
+.shinychat/
