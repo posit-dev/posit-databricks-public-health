@@ -1,0 +1,17 @@
+Type: Project
+Title: California Communicable Disease Agent
+Description: A commons data agent over CDPH communicable disease surveillance
+    data in Databricks, with trusted measures extracted from the dashboard,
+    report, and R walkthrough in this repository.
+Imports:
+    bsicons,
+    commons,
+    connectcreds,
+    DBI,
+    dbplyr,
+    dplyr,
+    ellmer,
+    htmltools,
+    odbc,
+    shiny,
+    shinychat

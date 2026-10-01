@@ -1,0 +1,28 @@
+# Internal presenter notes (not for customer handoff)
+_internal/
+
+# Environment and secrets
+.Renviron
+.env
+.databrickscfg
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+rsconnect/
+reports/*.html
+reports/*_files/
+
+# commons: generated context index (rebuilt by apps/commons-agent/deploy.R)
+apps/commons-agent/commons-cache/
+apps/commons-agent/manifest.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

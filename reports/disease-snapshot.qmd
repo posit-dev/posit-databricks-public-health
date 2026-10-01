@@ -1,0 +1,110 @@
+---
+title: "Communicable disease snapshot"
+subtitle: "`r params$county` County"
+date: today
+format:
+  html:
+    embed-resources: true
+    theme: cosmo
+    mainfont: "Open Sans"
+execute:
+  echo: false
+  warning: false
+params:
+  county: "Kern"
+  year: 2023
+---
+
+```{r}
+#| label: setup
+# On Posit Connect, scheduled renders have no viewer, so this report uses a
+# *service account* Databricks integration (Access > Integrations). The
+# code is identical to the interactive scripts: odbc::databricks() (odbc
+# 1.7.0 or later) picks up the service account token from connectcreds.
+library(DBI)
+library(dplyr, warn.conflicts = FALSE)
+library(dbplyr, warn.conflicts = FALSE)
+library(ggplot2)
+library(gt)
+library(connectcreds)
+
+con <- dbConnect(
+  odbc::databricks(),
+  httpPath = Sys.getenv("DATABRICKS_HTTP_PATH"),
+  bigint = "numeric"
+)
+
+cases <- tbl(con, I("public_health_demo.surveillance.infectious_disease_cases")) |>
+  filter(sex == "Total")
+
+county_year <- cases |>
+  filter(county == !!params$county, year == !!params$year) |>
+  select(disease, cases, rate_per_100k, rate_unstable)
+
+state_year <- cases |>
+  filter(is_statewide, year == !!params$year) |>
+  select(disease, state_rate = rate_per_100k)
+
+snapshot <- county_year |>
+  left_join(state_year, by = "disease") |>
+  filter(is.na(cases) | cases > 0) |>
+  arrange(desc(rate_per_100k)) |>
+  collect()
+
+top <- slice_head(snapshot, n = 1)
+```
+
+In `r params$year`, `r nrow(snapshot)` reportable diseases had at least one
+case among `r params$county` County residents. The highest incidence was
+**`r top$disease`** at **`r round(top$rate_per_100k, 1)` per 100,000**,
+compared with `r round(top$state_rate, 1)` statewide.
+
+## Diseases reported in `r params$year`
+
+```{r}
+#| label: table
+snapshot |>
+  mutate(ratio = rate_per_100k / state_rate) |>
+  relocate(rate_unstable, .after = ratio) |>
+  gt() |>
+  cols_label(
+    disease = "Disease", cases = "Cases", rate_per_100k = "County rate",
+    state_rate = "State rate", ratio = "County / state", rate_unstable = "Unstable"
+  ) |>
+  fmt_number(c(rate_per_100k, state_rate), decimals = 1) |>
+  fmt_number(ratio, decimals = 1, pattern = "{x}x") |>
+  fmt_number(cases, decimals = 0) |>
+  sub_missing(c(cases, rate_per_100k, ratio), missing_text = "Suppressed") |>
+  text_transform(
+    locations = cells_body(rate_unstable),
+    fn = function(x) ifelse(x == "TRUE", "Yes", "")
+  ) |>
+  tab_source_note("Counts of 1-10 and their rates are suppressed. Rates per 100,000. Unstable rates have a relative standard error of 23% or more.")
+```
+
+## Trend for `r top$disease`
+
+```{r}
+#| label: trend
+#| fig-height: 4
+trend <- cases |>
+  filter(disease == !!top$disease, county %in% !!c(params$county, "California")) |>
+  select(county, year, rate_per_100k) |>
+  collect() |>
+  mutate(county = if_else(county == "California", "California (statewide)", county))
+
+ggplot(trend, aes(year, rate_per_100k, color = county)) +
+  geom_line(linewidth = 1) +
+  geom_point() +
+  scale_color_manual(values = c("#EE6331", "#447099")) +
+  labs(x = NULL, y = "Rate per 100,000", color = NULL) +
+  theme_minimal(base_size = 13) +
+  theme(legend.position = "top")
+```
+
+```{r}
+#| label: cleanup
+dbDisconnect(con)
+```
+
+*Source: CDPH Infectious Diseases Branch, CHHS Open Data Portal. Generated from Databricks with Posit.*

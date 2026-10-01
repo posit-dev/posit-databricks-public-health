@@ -1,0 +1,84 @@
+$version: "0.1.0"
+name: surveillance
+label: California communicable disease surveillance
+description: >
+  Reported cases and incidence rates of selected communicable diseases among
+  California residents, by disease, county of residence, year of estimated
+  illness onset, and sex, 2001-2023.
+details: >
+  Source: CDPH Infectious Diseases Branch, "Infectious Diseases by Disease,
+  County, Year, and Sex" on the CHHS Open Data Portal
+  (https://data.chhs.ca.gov/dataset/infectious-disease), loaded into Unity
+  Catalog. Counts reflect cases reported as of the data extract and can differ
+  from earlier publications because of reporting and investigation delays.
+  Unity Catalog suppresses counts of 1-10 (and the matching rates and
+  confidence intervals) for users who are not authorized to see small cells,
+  so the same question can return fewer values for some users.
+origin: setup/sql/02_curated.sql
+glossary:
+  Valley Fever: Common name for Coccidioidomycosis, a fungal infection. Use disease = 'Coccidioidomycosis'.
+  STEC: Shiga toxin-producing E. coli. Reported as two diseases, with and without hemolytic uremic syndrome (HUS).
+  HUS: Hemolytic uremic syndrome.
+  incidence rate: Cases per 100,000 population, calculated as cases * 100,000 / population.
+  unstable rate: A rate whose relative standard error is 23% or more (the NCHS threshold). Interpret with caution.
+  small-cell suppression: Hiding counts of 1-10, and values that could reveal them, to protect privacy.
+tables:
+  - name: public_health_demo.surveillance.infectious_disease_cases
+    label: Infectious disease cases
+    description: >
+      One row per disease, county, year, and sex. County 'California' rows are
+      statewide totals; sex 'Total' rows include Female, Male, and Other.
+    details: >
+      Most questions should filter to sex = 'Total'. For county comparisons,
+      exclude the statewide rows (is_statewide = false). For statewide figures,
+      use the county = 'California' rows rather than adding up counties:
+      before suppression the two agree, but suppressed county counts make a
+      county sum too low. When combining several years, compute a pooled rate
+      as the sum of cases over the sum of population rather than averaging
+      rates.
+    columns:
+      - name: disease
+        type: string
+        description: Reportable disease name, exactly as published by CDPH.
+        examples: [Coccidioidomycosis, Campylobacteriosis, Salmonellosis, Lyme Disease, "Shiga toxin-producing E. coli (STEC) without HUS"]
+      - name: county
+        type: string
+        description: County where the case-patient lived at illness onset, or 'California' for the statewide total.
+        examples: [California, Los Angeles, Kern, Fresno, Humboldt]
+      - name: year
+        type: number(ordinal)
+        description: Year of estimated illness onset.
+        range: [2001, 2023]
+      - name: sex
+        type: enum
+        values:
+          Female: Female (including male-to-female transgender)
+          Male: Male (including female-to-male transgender)
+          Total: All case-patients, including sex reported as other or missing
+      - name: cases
+        type: number(quantity)
+        units: cases
+        description: Cases meeting the surveillance case definition.
+        details: >
+          NULL means suppressed: either by CDPH in the published data
+          (source_suppressed = true) or by the Unity Catalog small-cell mask
+          (a true count of 1-10). SQL sums skip NULLs, so totals and pooled rates
+          across suppressed rows are lower bounds. Say so when it matters.
+      - name: population
+        type: number(quantity)
+        units: persons
+        description: California Department of Finance population estimate for the county, year, and sex.
+      - name: rate_per_100k
+        type: number(quantity)
+        units: cases per 100,000 persons
+        description: Published incidence rate. 0 when there were no cases.
+        details: NULL when the count is suppressed or the rate was not calculated (for example, the first partial year of required reporting).
+      - name: rate_unstable
+        type: boolean
+        description: TRUE when CDPH flags the rate as unstable (relative standard error of 23% or more).
+      - name: source_suppressed
+        type: boolean
+        description: TRUE when CDPH suppressed this row in the published data for small numbers.
+      - name: is_statewide
+        type: boolean
+        description: TRUE for the statewide (county = 'California') rows.

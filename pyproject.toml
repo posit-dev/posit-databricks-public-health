@@ -1,0 +1,13 @@
+[project]
+name = "cdph-databricks-demo"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "databricks-sdk>=0.145.0",
+    "ibis-framework[databricks]>=12.0.0",
+    "pandas>=3.0.6",
+    "posit-sdk>=0.17.0",
+    "pyarrow>=25.0.1",
+    "rsconnect-python>=1.31.1",
+    "sqlglot>=30.10,<30.18",
+]
