@@ -57,12 +57,12 @@ In R, `odbc::databricks()` checks these in order, and `library(connectcreds)` su
 ### 2. Configure
 
 ```bash
-cp .Renviron.example ~/.Renviron
+cp .env.example .env
 ```
 
-Edit `DATABRICKS_HTTP_PATH` to match your SQL warehouse, and restart R. On Workbench, `DATABRICKS_HOST` is set for you.
+Edit `DATABRICKS_HTTP_PATH` in `.env` to match your SQL warehouse. Both walkthroughs read this one file: the R script with base R's `readRenviron(".env")`, and the Python script with `python-dotenv`. Run them from the project root. On Workbench, `DATABRICKS_HOST` is set for you.
 
-To export the same variables for Python and the setup script, run `export DATABRICKS_HTTP_PATH=...` in the terminal, or use a `.env` file.
+On Connect, set the same variables under **Vars** in the content settings. `.env` is gitignored and never deployed.
 
 ### 3. Install packages
 

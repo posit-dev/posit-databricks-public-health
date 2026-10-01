@@ -13,10 +13,12 @@ import os
 
 import ibis
 from databricks.sdk.core import databricks_cli
+from dotenv import load_dotenv
 from posit.connect.external.databricks import ConnectStrategy, databricks_config
 from posit.workbench.external.databricks import WorkbenchStrategy
 
 ibis.options.interactive = True
+load_dotenv()  # DATABRICKS_HTTP_PATH from the project's .env (see .env.example)
 
 host = os.environ["DATABRICKS_HOST"].removeprefix("https://").rstrip("/")
 http_path = os.environ["DATABRICKS_HTTP_PATH"]

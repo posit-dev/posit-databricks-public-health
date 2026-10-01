@@ -20,7 +20,9 @@ library(ggplot2)
 #   - Laptop: DATABRICKS_TOKEN / client ID, or the Databricks CLI
 #
 # The workspace comes from DATABRICKS_HOST (set by Workbench). The SQL
-# warehouse comes from DATABRICKS_HTTP_PATH, set once in ~/.Renviron.
+# warehouse comes from DATABRICKS_HTTP_PATH in the project's .env file,
+# the same file the Python script reads (see .env.example).
+if (file.exists(".env")) readRenviron(".env")
 
 con <- dbConnect(
   odbc::databricks(),

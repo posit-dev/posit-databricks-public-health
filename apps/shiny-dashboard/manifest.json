@@ -10,7 +10,7 @@
     "has_parameters": false
   },
   "environment": {
-    "image": "posit/connect-content:R4.6-python3.14-ubuntu-22.04-pro"
+    "image": "posit/connect-content:R4.6.1-python3.14.7-pro"
   },
   "packages": {
     "DBI": {
