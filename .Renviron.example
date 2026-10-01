@@ -1,9 +1,0 @@
-# Copy to ~/.Renviron (or the project folder) and restart R.
-# No secrets go here: credentials come from Workbench, Connect, or the Databricks CLI.
-
-# Set automatically on Posit Workbench when you start a session with Databricks credentials.
-# Set it yourself only on a laptop.
-# DATABRICKS_HOST=https://adb-1234567890123456.12.azuredatabricks.net
-
-# SQL warehouse: Databricks UI > SQL Warehouses > (warehouse) > Connection details > HTTP path
-DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/<warehouse-id>
